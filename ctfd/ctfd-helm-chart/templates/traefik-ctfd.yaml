@@ -1,0 +1,23 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingress-ctfd
+  namespace: ctfd
+  labels:
+    kube-ctf.downunderctf.com/type: web
+    kube-ctf.downunderctf.com/name: ctfd
+spec:
+  entryPoints:
+    - web
+    - websecure
+  tls:
+    certResolver: default
+  routes:
+    - match: Host(`{{ .Values.Host }}`)
+      kind: Rule
+      priority: 10
+      #      middlewares:
+      #- name: secure-headers
+      services:
+      - name: ctfd
+        port: 8000

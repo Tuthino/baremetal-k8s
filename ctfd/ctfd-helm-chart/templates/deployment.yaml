@@ -1,0 +1,142 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ctfd-website
+  labels:
+    {{- include "ctfd-website.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "ctfd-website.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ctfd-website.selectorLabels" . | nindent 8 }}
+        ctfd: ctfd
+        app: ctfd
+    spec:
+      # This config is needed if you don't have dns server and want not 
+      # manually configure /etc/hosts file
+      #hostAliases: ## TODO: CHANGE for your use case, ip and hostname
+      #- ip: "172.16.1.155"
+      #  hostnames:
+      #  - "ctfd.local"
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ctfd-website.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      automountServiceAccountToken: false
+                                                                                                         
+      initContainers:
+        #- name: wait-for-cache
+        #  image: busybox:1.28
+        #  command:
+        #    [
+        #      "sh",
+        #      "-c",
+        #      "until nc -z ctfd-cache-master:6379; do echo 'Waiting for cache'; sleep 0.1; done; echo 'Cache available'",
+        #    ]
+      containers:
+                                                                                                         
+        - env:
+            - name: ACCESS_LOG
+              value: "-"
+            - name: ERROR_LOG
+              value: "-"
+            - name: LOG_FOLDER
+              value: /var/log/CTFd
+            - name: REDIS_URL
+              value: redis://ctfd-cache-master:6379
+            - name: REVERSE_PROXY
+              value: "true"
+            - name: UPLOAD_FOLDER
+              value: /var/uploads
+            - name: WORKERS
+              value: "2"
+            - name: SECRET_KEY
+              value: "2wvIF9xRPjY/Nnr6drk1LmISHItKXFrP"
+            - name: DATABASE_ADDRESS
+              value: ctfd-mysql-db
+            - name: DATABASE_SCHEMA
+              value: 'mysql'
+            - name: DATABASE_BUILDER
+              value: 'True'
+                                                                                                         
+            - name: "APPLICATION_URL"
+              value: "{{ printf "https://%s" .Values.Host }}"
+            # - name: DATABASE_URL
+            #   value: "{{ printf "mysql://$(DATABASE_USER):$(DATABASE_PASS)@$(DATABASE_ADDRESS)/$(DATABASE_TABLE)" }}"
+            #   value: "{{ printf "mysql+pymysql://$(DATABASE_USER):$(DATABASE_PASS)@$(DATABASE_ADDRESS)/$(DATABASE_TABLE)" }}"
+            #- name: DATABASE_BUILDER
+            #  value: "true"
+            # database credentials that are stored in secret named
+            # 'db-credentials' that needs to be in the ctfd namespace
+            - name: DATABASE_URL
+              value: mysql+pymysql://ctfd:ctfd@ctfd-mysql-db/ctfd
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: DB_USER 
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: mysql-password 
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: DB_NAME 
+                                                                                                         
+          name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 30
+                                                                                                         
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+                                                                                                         
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+

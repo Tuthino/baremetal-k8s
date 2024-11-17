@@ -1,0 +1,51 @@
+# Default values for chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+kube-janitor:
+  quota:
+    limits:
+      memory: 256Mi
+    requests:
+      cpu: 20m
+      memory: 256Mi
+
+challenge-manager:
+  replicas: 3
+  quota:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 125m
+      memory: 256Mi
+
+landing:
+  replicas: 3
+  quota:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 256Mi
+
+# tutaj ustawiamy nasze repozytorium i tagi pod ktorymi zapiszemy obraz dockera dla 
+# strony ktora pojawi sie zanim zadanie sie uruchomi
+# oraz dla challenge-managera
+repository: 276314/baremetal-k8s
+landingTag: landing
+challManagerTag: challenge-manager
+imagePullSecretName: regcred
+
+domain:
+  # jesli chcemy oddzielne domeny dla zadan i managemnt'u, mozemy je tutaj ustawic
+  # natomiast rownie dobrze mozna zostawic takie same, poniewaz zadania i challenge manager i tak
+  # tworza subdomene
+  challenges: ctfd-lab.reyio.ovh
+  management: ctfd-lab.reyio.ovh
+
+
+challengeNamespaces:
+  - challenges
+  - challenges-isolated
