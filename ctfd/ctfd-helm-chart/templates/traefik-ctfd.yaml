@@ -15,9 +15,32 @@ spec:
   routes:
     - match: Host(`{{ .Values.Host }}`)
       kind: Rule
-      priority: 10
-      #      middlewares:
-      #- name: secure-headers
+      priority: 12
+      middlewares:
+      - name: hsts
       services:
-      - name: ctfd
+      - name: ctfd-website
         port: 8000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: secure-headers
+  namespace: ctfd
+spec:
+  headers:
+    stsSeconds: 15552000
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: hsts
+  namespace: ctfd
+spec:
+  headers:
+    stsSeconds: 15552000
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+---

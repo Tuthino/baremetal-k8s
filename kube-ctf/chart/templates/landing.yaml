@@ -57,7 +57,7 @@ spec:
   routes:
     - match: HostRegexp(`{{ .Values.domain.challenges }}`, `{subdomain:[\w-]+}.{{ .Values.domain.challenges }}`)
       kind: Rule
-      priority: 1
+      priority: 10
       middlewares:
       - name: hsts
       services:

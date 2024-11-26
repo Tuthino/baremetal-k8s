@@ -10,7 +10,7 @@ spec:
   secretName: {{ .Release.Name }}-ctfd
   issuerRef:
     kind: ClusterIssuer
-    name: {{ .Release.Name }}-letsencrypt
+    name: {{ .Values.certissuer }}
   dnsNames:
   - {{ .Values.Host }}
   - "*.{{ .Values.Host }}"

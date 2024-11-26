@@ -1,4 +1,4 @@
-FROM ctfd/ctfd:3.7.0
+FROM ctfd/ctfd:3.7.4
 
 USER root
 

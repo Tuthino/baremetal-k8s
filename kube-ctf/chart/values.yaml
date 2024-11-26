@@ -38,6 +38,9 @@ landingTag: landing
 challManagerTag: challenge-manager
 imagePullSecretName: regcred
 
+
+certissuer: cert-manager-letsencrypt
+
 domain:
   # jesli chcemy oddzielne domeny dla zadan i managemnt'u, mozemy je tutaj ustawic
   # natomiast rownie dobrze mozna zostawic takie same, poniewaz zadania i challenge manager i tak

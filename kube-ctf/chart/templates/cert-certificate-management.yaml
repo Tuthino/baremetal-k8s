@@ -11,7 +11,7 @@ spec:
   secretName: {{ .Release.Name }}-cert-management
   issuerRef:
     kind: ClusterIssuer
-    name: {{ .Release.Name }}-letsencrypt
+    name: {{ .Values.certissuer }}
   dnsNames:
   - {{ .Values.domain.management }}
   - "*.{{ .Values.domain.management }}"

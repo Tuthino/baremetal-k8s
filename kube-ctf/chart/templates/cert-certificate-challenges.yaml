@@ -10,7 +10,7 @@ spec:
   secretName: {{ .Release.Name }}-cert-challenges
   issuerRef:
     kind: ClusterIssuer
-    name: {{ .Release.Name }}-letsencrypt
+    name: {{ .Values.certissuer }}
   dnsNames:
   - {{ .Values.domain.challenges }}
   - "*.{{ .Values.domain.challenges }}"

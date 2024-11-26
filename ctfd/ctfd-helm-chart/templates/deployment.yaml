@@ -39,14 +39,6 @@ spec:
       automountServiceAccountToken: false
                                                                                                          
       initContainers:
-        #- name: wait-for-cache
-        #  image: busybox:1.28
-        #  command:
-        #    [
-        #      "sh",
-        #      "-c",
-        #      "until nc -z ctfd-cache-master:6379; do echo 'Waiting for cache'; sleep 0.1; done; echo 'Cache available'",
-        #    ]
       containers:
                                                                                                          
         - env:
@@ -74,12 +66,7 @@ spec:
               value: 'True'
                                                                                                          
             - name: "APPLICATION_URL"
-              value: "{{ printf "https://%s" .Values.Host }}"
-            # - name: DATABASE_URL
-            #   value: "{{ printf "mysql://$(DATABASE_USER):$(DATABASE_PASS)@$(DATABASE_ADDRESS)/$(DATABASE_TABLE)" }}"
-            #   value: "{{ printf "mysql+pymysql://$(DATABASE_USER):$(DATABASE_PASS)@$(DATABASE_ADDRESS)/$(DATABASE_TABLE)" }}"
-            #- name: DATABASE_BUILDER
-            #  value: "true"
+              value: "{{ printf https://%s .Values.Host }}"
             # database credentials that are stored in secret named
             # 'db-credentials' that needs to be in the ctfd namespace
             - name: DATABASE_URL

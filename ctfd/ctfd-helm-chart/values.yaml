@@ -15,8 +15,10 @@ image:
 
 imagePullSecrets: 
   - name: regcred
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "ctfd-website"
+fullnameOverride: "ctfd-website"
+
+certissuer: cert-manager-letsencrypt
 
 serviceAccount:
   # Specifies whether a service account should be created
