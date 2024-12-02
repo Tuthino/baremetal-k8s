@@ -65,8 +65,6 @@ spec:
             - name: DATABASE_BUILDER
               value: 'True'
                                                                                                          
-            - name: "APPLICATION_URL"
-              value: "{{ printf https://%s .Values.Host }}"
             # database credentials that are stored in secret named
             # 'db-credentials' that needs to be in the ctfd namespace
             - name: DATABASE_URL
